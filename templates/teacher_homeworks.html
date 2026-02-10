@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Teacher - Homeworks</h2>
+  <a class="btn btn-primary mb-3" href="{{ url_for('teacher_add_homework') }}">Add Homework</a>
+  <table class="table table-bordered">
+    <thead><tr><th>ID</th><th>Subject</th><th>Description</th><th>Deadline</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for h in homeworks %}
+        <tr>
+          <td>{{ h['id'] }}</td>
+          <td>{{ h['subject_name'] }}</td>
+          <td>{{ h['task_description'] }}</td>
+          <td>{{ h['deadline'] }}</td>
+          <td><a class="btn btn-sm btn-info" href="{{ url_for('teacher_homework_submissions', hw_id=h['id']) }}">Submissions</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

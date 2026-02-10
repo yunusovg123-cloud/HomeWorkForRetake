@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Homework Details</h2>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">{{ hw['subject_name'] }}</h5>
+      <p class="card-text">{{ hw['task_description'] }}</p>
+      <p><strong>Deadline:</strong> {{ hw['deadline'] }}</p>
+      <p><strong>Allowed file type:</strong> {{ hw['file_type'] }}</p>
+    </div>
+  </div>
+  <h4>Submit your work</h4>
+  <form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="file" name="file" class="form-control-file">
+    </div>
+    <button class="btn btn-primary" type="submit">Upload</button>
+  </form>
+{% endblock %}

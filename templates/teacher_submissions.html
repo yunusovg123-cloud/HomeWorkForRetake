@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Submissions for: {{ hw['subject_name'] }}</h2>
+  <table class="table table-striped">
+    <thead><tr><th>ID</th><th>Student</th><th>File</th><th>Date</th><th>Grade</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for s in submissions %}
+        <tr>
+          <td>{{ s['id'] }}</td>
+          <td>{{ s['student_name'] }}</td>
+          <td><a href="{{ url_for('uploaded_file', filename=s['uploaded_file']) }}">{{ s['uploaded_file'] }}</a></td>
+          <td>{{ s['submission_date'] }}</td>
+          <td>{{ s['grade'] or '-' }}</td>
+          <td><a class="btn btn-sm btn-primary" href="{{ url_for('grade_submission', sub_id=s['id']) }}">Grade</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

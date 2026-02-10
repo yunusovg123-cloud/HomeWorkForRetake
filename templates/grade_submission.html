@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Grade Submission</h2>
+  <div class="card mb-3">
+    <div class="card-body">
+      <p><strong>Student:</strong> {{ submission['student_name'] }}</p>
+      <p><strong>Homework:</strong> {{ submission['subject_name'] }}</p>
+      <p><strong>File:</strong> <a href="{{ url_for('uploaded_file', filename=submission['uploaded_file']) }}">{{ submission['uploaded_file'] }}</a></p>
+    </div>
+  </div>
+  <form method="post">
+    <div class="form-group">
+      <label>Grade</label>
+      <input class="form-control" name="grade">
+    </div>
+    <div class="form-group">
+      <label>Comment</label>
+      <textarea class="form-control" name="comment"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+{% endblock %}

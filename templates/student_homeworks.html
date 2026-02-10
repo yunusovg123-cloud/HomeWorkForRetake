@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Available Homeworks</h2>
+  <form class="form-inline mb-3" method="get">
+    <select class="form-control mr-2" name="subject">
+      <option value="">All subjects</option>
+      {% for s in subjects %}
+        <option value="{{ s }}" {% if request.args.get('subject')==s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <input class="form-control mr-2" name="q" placeholder="Search" value="{{ request.args.get('q','') }}">
+    <button class="btn btn-secondary" type="submit">Filter</button>
+  </form>
+  <table class="table table-bordered">
+    <thead><tr><th>ID</th><th>Subject</th><th>Description</th><th>Deadline</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for h in homeworks %}
+        <tr>
+          <td>{{ h['id'] }}</td>
+          <td>{{ h['subject_name'] }}</td>
+          <td>{{ h['task_description'] }}</td>
+          <td>{{ h['deadline'] }}</td>
+          <td><a class="btn btn-sm btn-primary" href="{{ url_for('student_homework_detail', hw_id=h['id']) }}">Open</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
