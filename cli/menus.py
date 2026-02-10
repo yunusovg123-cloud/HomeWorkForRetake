@@ -4,7 +4,7 @@ from services.submission_service import SubmissionService
 from cli.student_cli import StudentController
 from cli.teacher_cli import TeacherController
 from cli.auth_cli import AuthCLI
-from utils.helpers import safe_input
+from utils.helpers import safe_input, select_numeric_menu
 
 
 class Menus:
@@ -32,23 +32,43 @@ class Menus:
                 else:
                     self.teacher_ctrl.menu(user)
             elif choice == '2':
-                name = safe_input('Name: ').strip()
-                role = ''
-                while role not in ('student', 'teacher'):
-                    role = safe_input("Role ('student' or 'teacher'): ").strip()
-                group = None
-                phone = safe_input('Phone number: ').strip()
-                from getpass import getpass
-                pwd = getpass('Set password: ')
-                if role == 'student':
-                    group = safe_input('Group number: ').strip() or None
-                try:
-                    self.auth.register_user(name, phone, pwd, role, group)
-                    print('User created')
-                except Exception as e:
-                    print('Error creating user:', e)
+                self._create_user_menu()
             elif choice == '3':
-                print('Bye')
+                print('Bye!')
                 break
             else:
-                print('Invalid choice')
+                print('Invalid choice. Please enter 1-3.')
+
+    def _create_user_menu(self) -> None:
+        """Handle user registration with improved UX for role selection."""
+        print('\n=== Create User ===')
+        name = safe_input('Name: ').strip()
+        if not name:
+            print('Name cannot be empty.')
+            return
+        
+        # Role selection using numeric menu
+        role_choice = select_numeric_menu(['Student', 'Teacher'], 'Select role: ')
+        if role_choice == -1:
+            return
+        role = 'student' if role_choice == 1 else 'teacher'
+        
+        phone = safe_input('Phone number: ').strip()
+        if not phone:
+            print('Phone number cannot be empty.')
+            return
+        
+        pwd = safe_input('Set password: ')
+        if not pwd:
+            print('Password cannot be empty.')
+            return
+        
+        group = None
+        if role == 'student':
+            group = safe_input('Group number: ').strip() or None
+        
+        try:
+            self.auth.register_user(name, phone, pwd, role, group)
+            print('✓ User created successfully.')
+        except Exception as e:
+            print(f'✗ Error creating user: {e}')

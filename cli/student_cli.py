@@ -11,9 +11,9 @@ class StudentController:
         self.sub_service = sub_service
 
     def menu(self, user) -> None:
-        print(f"\nLogged in as {user.name} (student)")
+        print(f"\n✓ Logged in as {user.name} (Student)")
         while True:
-            print('\n-- Student Menu --')
+            print('\n--- Student Menu ---')
             print('1) List homeworks')
             print('2) Search homeworks')
             print('3) Filter by subject')
@@ -22,57 +22,86 @@ class StudentController:
             print('6) View my submission history')
             print('7) Logout')
             c = safe_input('Choose: ').strip()
+            
             if c == '1':
                 hws = self.hw_service.list_all()
-                rows = [[hw.id, hw.subject_name, hw.task_description, hw.deadline, hw.file_type] for hw in hws]
-                print_table(['ID', 'Subject', 'Description', 'Deadline', 'FileType'], rows)
+                if not hws:
+                    print('No homeworks available.')
+                else:
+                    rows = [[hw.id, hw.subject_name, hw.task_description, hw.deadline, hw.file_type] for hw in hws]
+                    print_table(['ID', 'Subject', 'Description', 'Deadline', 'FileType'], rows)
+                safe_input('Press Enter to continue...')
             elif c == '2':
-                q = safe_input('Keyword: ').strip()
+                q = safe_input('Enter keyword: ').strip()
+                if not q:
+                    print('Search keyword cannot be empty.')
+                    continue
                 hws = self.hw_service.search(q)
-                rows = [[hw.id, hw.subject_name, hw.task_description, hw.deadline, hw.file_type] for hw in hws]
-                print_table(['ID', 'Subject', 'Description', 'Deadline', 'FileType'], rows)
+                if not hws:
+                    print(f'No homeworks found matching "{q}".')
+                else:
+                    rows = [[hw.id, hw.subject_name, hw.task_description, hw.deadline, hw.file_type] for hw in hws]
+                    print_table(['ID', 'Subject', 'Description', 'Deadline', 'FileType'], rows)
+                safe_input('Press Enter to continue...')
             elif c == '3':
-                print('Subjects:')
+                print('\nAvailable subjects:')
                 for s in self.hw_service.SUBJECTS:
-                    print('-', s)
-                subj = safe_input('Subject: ').strip()
+                    print(f'  - {s}')
+                subj = safe_input('Select subject: ').strip()
+                if not subj:
+                    print('Subject cannot be empty.')
+                    continue
                 hws = self.hw_service.filter_by_subject(subj)
-                rows = [[hw.id, hw.subject_name, hw.task_description, hw.deadline, hw.file_type] for hw in hws]
-                print_table(['ID', 'Subject', 'Description', 'Deadline', 'FileType'], rows)
+                if not hws:
+                    print(f'No homeworks found for subject "{subj}".')
+                else:
+                    rows = [[hw.id, hw.subject_name, hw.task_description, hw.deadline, hw.file_type] for hw in hws]
+                    print_table(['ID', 'Subject', 'Description', 'Deadline', 'FileType'], rows)
+                safe_input('Press Enter to continue...')
             elif c == '4':
-                hid = safe_input('Enter homework id: ').strip()
+                hid = safe_input('Enter homework ID: ').strip()
                 if not hid.isdigit():
-                    print('Invalid id')
+                    print('✗ Invalid ID. Must be a number.')
                     continue
                 hw = self.hw_service.get(int(hid))
                 if hw is None:
-                    print('Not found')
+                    print('✗ Homework not found.')
                 else:
-                    print('\n--- Homework Detail ---')
-                    print('ID:', hw.id)
-                    print('Subject:', hw.subject_name)
-                    print('Description:', hw.task_description)
-                    print('Deadline:', hw.deadline)
-                    print('Allowed file type:', hw.file_type)
+                    print('\n--- Homework Details ---')
+                    print(f'ID: {hw.id}')
+                    print(f'Subject: {hw.subject_name}')
+                    print(f'Description: {hw.task_description}')
+                    print(f'Deadline: {hw.deadline}')
+                    print(f'Allowed file type: {hw.file_type}')
+                safe_input('Press Enter to continue...')
             elif c == '5':
-                hid = safe_input('Enter homework id to submit: ').strip()
+                hid = safe_input('Enter homework ID to submit: ').strip()
                 if not hid.isdigit():
-                    print('Invalid id')
+                    print('✗ Invalid ID. Must be a number.')
                     continue
-                filename = safe_input('Enter filename/path to submit (simulated): ').strip()
+                filename = safe_input('Enter filename/path (simulated): ').strip()
+                if not filename:
+                    print('Filename cannot be empty.')
+                    continue
                 try:
                     res = self.sub_service.submit(int(hid), user.id, filename)
-                    print('Submitted:', res)
+                    print(f'✓ Submission successful: {res}')
                 except Exception as e:
-                    print('Error:', e)
+                    print(f'✗ Submission failed: {e}')
+                safe_input('Press Enter to continue...')
             elif c == '6':
                 subs = self.sub_service.list_for_student(user.id)
-                rows = []
-                for s in subs:
-                    rows.append([s['id'], s['homework_id'], s['subject_name'], s['uploaded_file'], s['submission_date'], s.get('grade') or '-', s.get('teacher_comment') or '-'])
-                print_table(['ID', 'HW_ID', 'Subject', 'File', 'Date', 'Grade', 'Comment'], rows)
+                if not subs:
+                    print('No submissions yet.')
+                else:
+                    rows = []
+                    for s in subs:
+                        rows.append([s['id'], s['homework_id'], s['subject_name'], s['uploaded_file'], 
+                                   s['submission_date'], s.get('grade') or '-', s.get('teacher_comment') or '-'])
+                    print_table(['ID', 'HW_ID', 'Subject', 'File', 'Date', 'Grade', 'Comment'], rows)
+                safe_input('Press Enter to continue...')
             elif c == '7':
-                print('Logout')
+                print('Logged out.')
                 break
             else:
-                print('Invalid choice')
+                print('✗ Invalid choice. Please enter 1-7.')
